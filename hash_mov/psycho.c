@@ -149,7 +149,7 @@ void initGraphics() {
      color = 10;
      for(i = (MAX_COLS/2)-TAM; i<(MAX_COLS/2)+TAM;i++) {
           //drawPixel(color, i, (MAX_ROWS/2)-1);
-          drawPixel(color, i, (MAX_ROWS/2));
+          //drawPixel(color, i, (MAX_ROWS/2));
           //drawPixel(color, i, (MAX_ROWS/2)+1);
      }
      
@@ -203,36 +203,64 @@ void mySleep(int n){
      return aleatorio;
     }
 }*/
-void move(){
+/*void left(unsigned char colorErase, unsigned char colorDraw, int j){
      int i = 0, cont = 1;
+     for( i = j+TAM; i == i;i--) {
+           if(i == 0) i = 320;
 
-     short hit;
+           drawPixel(colorDraw, i-1, (MAX_ROWS/2));
+           cont ++;
+           mySleep(5);
+           //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
+           drawPixel(colorErase, i+(TAM*2)+1, (MAX_ROWS/2));
+      }
+}*/
+/*void right(unsigned char colorErase, unsigned char colorDraw, int j){
+     int i = 0, cont = 1;
+     for( i = j-TAM; i == i;i++) {
+           if(i == 319) i = 1;
+
+           drawPixel(colorDraw, i-1, (MAX_ROWS/2));
+           cont ++;
+           mySleep(5);
+           //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
+           drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
+     }
+}*/
+/*void up(unsigned char colorErase, unsigned char colorDraw, int i){
+     int j = 0, cont = 1;
+     for( j = i+TAM; j == j;j--) {
+           if(j == 0) j = 200;
+
+           drawPixel(colorDraw, (MAX_COLS/2),j-1 );
+           cont ++;
+           mySleep(5);
+           //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
+           drawPixel(colorErase, (MAX_COLS/2), j+(TAM*2)+1);
+     }
+}*/
+void down(unsigned char colorErase, unsigned char colorDraw, int i){
+     int cont = 1, j = 0;
+     for( j = i-TAM; j == j;j++) {
+           if(j == 199) j = 1;
+
+           drawPixel(colorDraw, (MAX_COLS/2),j-1 );
+           cont ++;
+           mySleep(5);
+           //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
+           drawPixel(colorErase, (MAX_COLS/2), j-(TAM*2)+1);
+     }
+}
+void move(){
+     
+     int posfila = 40 ;
+     //int poscolumna = 30;
      unsigned char colorErase = 255;
      unsigned char colorDraw = 10;
-     //unsigned long pls;
-     for( i = (MAX_COLS/2)-TAM; i == i;i++) {
-          if(i >= 319) i = 1;
-          hit=getcharAS();
-          if ((char)hit=='W'){
-               drawPixel(colorDraw, i-1, (MAX_ROWS/2));
-               cont ++;
-               mySleep(5);
-               drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
-          }
-          else{
-               drawPixel(colorDraw, i+1, (MAX_ROWS/2));
-               cont ++;
-               mySleep(5);
-               //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
-               drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
-          }
-          //drawPixel(colorDraw, i-1, (MAX_ROWS/2)-1);
-          //drawPixel(colorDraw, i-1, (MAX_ROWS/2)+1);
-          //drawPixel(colorErase, i+(TAM*2)+1, (MAX_ROWS/2)-1);
-          //drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2)+1);
-
-     }
-
+     //left(colorErase,colorDraw,poscolumna);
+     //right(colorErase,colorDraw,poscolumna);
+     //up(colorErase,colorDraw,posfila);
+     down(colorErase,colorDraw,posfila);
 }
 
 /**
