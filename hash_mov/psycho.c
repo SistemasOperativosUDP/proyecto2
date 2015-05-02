@@ -163,7 +163,11 @@ void initGraphics() {
           "INT     15H\n"
      );
 }*/
-
+/**
+* Funcion que permite que la serpiente se 
+* mueva de forma mas lentas gastanto tiempo
+* en el procesardor
+*/
 void mySleep(int n){
      volatile int i;
      for(i = 0; i<n*10000; ++i){
@@ -202,18 +206,26 @@ void mySleep(int n){
 void move(){
      int i = 0, cont = 1;
 
-
+     short hit;
      unsigned char colorErase = 255;
      unsigned char colorDraw = 10;
      //unsigned long pls;
      for( i = (MAX_COLS/2)-TAM; i == i;i++) {
           if(i >= 319) i = 1;
-          drawPixel(colorDraw, i-1, (MAX_ROWS/2));
-          cont ++;
-          mySleep(10);
-          //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
-          drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
-          
+          hit=getcharAS();
+          if ((char)hit=='W'){
+               drawPixel(colorDraw, i-1, (MAX_ROWS/2));
+               cont ++;
+               mySleep(5);
+               drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
+          }
+          else{
+               drawPixel(colorDraw, i+1, (MAX_ROWS/2));
+               cont ++;
+               mySleep(5);
+               //drawPixel(colorDraw,hashi(i,cont),(MAX_ROWS/2));
+               drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
+          }
           //drawPixel(colorDraw, i-1, (MAX_ROWS/2)-1);
           //drawPixel(colorDraw, i-1, (MAX_ROWS/2)+1);
           //drawPixel(colorErase, i+(TAM*2)+1, (MAX_ROWS/2)-1);
