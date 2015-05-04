@@ -12,8 +12,10 @@ __asm__(".code16gcc\n");
 __asm__("jmpl $0x0000, $main\n");
 
 #define MAX_COLS    320 // maximum columns of the screen
-#define MAX_ROWS    199 // maximum rows of the screen
+#define MAX_ROWS    200 // maximum rows of the screen
 #define TAM    20
+unsigned char colorDraw = 0x0F;
+unsigned char colorErase = 0x00;
 //#include <unistd.h>
 /**
  * function to print string onto the screen                             
@@ -27,35 +29,14 @@ __asm__("jmpl $0x0000, $main\n");
  * character                                                            
  */
 
-/*void printString(const char* pStr) {
+void printString(const char* pStr) {
      while(*pStr) {
           __asm__ __volatile__ (
                "int $0x10" : : "a"(0x0e00 | *pStr), "b"(0x0007)
           );
           ++pStr;
      }
-}*/
-
-
-short getcharAS() {
-     short word;
-
-     __asm__ __volatile__(
-          "int $0x16" : : "a"(0x1000)
-     );
-
-     __asm__ __volatile__(
-          "movw %%ax, %0" : "=r"(word)
-     );
-
-     return word;
 }
-
-/*void putcharAS(short ch) {
-     __asm__ __volatile__(
-          "int $0x10" : : "a"(0x0e00 | (char)ch)
-     );
-}*/
 
 /**
  * function to get a keystroke from the keyboard                        
@@ -65,13 +46,13 @@ short getcharAS() {
  * we use this function to hit a key to continue by the                 
  * user                                                                 
  */
-/*void getch() {
+void getch() {
      __asm__ __volatile__ (
           "xorw %ax, %ax\n"
           "int $0x16\n"
      );
 }
-*/
+
 
 /** 
  * function to print a colored pixel onto the screen                    
@@ -111,8 +92,7 @@ void initEnvironment() {
 }
 
 /**
- * function to print rectangles in descending order of                  
- * their sizes                                                          
+ * function to print the rectangle border                                                 
  * I follow the below sequence                                          
  * (left, top)     to (left, bottom)                                    
  * (left, bottom)  to (right, bottom)                                   
@@ -120,38 +100,27 @@ void initEnvironment() {
  * (right, top)    to (left, top)                                       
  */
 void initGraphics() {
-     int i = 0, j = 0;
-     int m = 0;
-     //int cnt1 = 0, cnt2 =0;
-     unsigned char color = 0x0F;
+     int i = 0, j = 0, m = 0;
      /* (left, top) to (left, bottom)                              */
      j = 0;
      for(i = m; i < MAX_ROWS - m; ++i) {
-          drawPixel(color, j+m, i);
+          drawPixel(colorDraw, j+m, i);
      }
      /* (left, bottom) to (right, bottom)                          */
      for(j = m; j < MAX_COLS - m; ++j) {
-          drawPixel(color, j, i);
+          drawPixel(colorDraw, j, i);
      }
 
      /* (right, bottom) to (right, top)                            */
      for(i = MAX_ROWS - m - 1 ; i >= m; --i) {
-          drawPixel(color, MAX_COLS - m - 1, i);
+          drawPixel(colorDraw, MAX_COLS - m - 1, i);
      }
      /* (right, top)   to (left, top)                              */
      for(j = MAX_COLS - m - 1; j >= m; --j) {
-          drawPixel(color, j, m);
-     }     
+          drawPixel(colorDraw, j, m);
+     }   
 }
 
-/*void sleep(){
-     __asm__ __volatile__(
-          "MOV     CX, 0FH\n"
-          "MOV     DX, 4240H\n"
-          "MOV     AH, 86H\n"
-          "INT     15H\n"
-     );
-}*/
 /**
 * Funcion que permite que la serpiente se 
 * mueva de forma mas lentas gastanto tiempo
@@ -162,6 +131,7 @@ void mySleep(int n){
      for(i = 0; i<n*10000; ++i){
      }
 }
+
 /**
 * Funcion de hash que me lanzara de forma aleatorea la 
 * ubicacion en la fila aleatoria para poder ubicar la comida
@@ -196,7 +166,6 @@ void mySleep(int n){
      int i = 0, cont = 1;
      for( i = j+TAM; i == i;i--) {
            if(i == 0) i = 320;
-
            drawPixel(colorDraw, i-1, (MAX_ROWS/2));
            cont ++;
            mySleep(5);
@@ -208,7 +177,6 @@ void mySleep(int n){
      int i = 0, cont = 1;
      for( i = j-TAM; i == i;i++) {
            if(i == 319) i = 1;
-
            drawPixel(colorDraw, i-1, (MAX_ROWS/2));
            cont ++;
            mySleep(5);
@@ -216,32 +184,18 @@ void mySleep(int n){
            drawPixel(colorErase, i-(TAM*2)+1, (MAX_ROWS/2));
      }
 }*/
-void up(unsigned char colorErase, unsigned char colorDraw, int i){
-     int j = 0;
-     for( j = i; j == j;j--) {
-       if(j == 1){  
-        for(j = (TAM*2)+2;j>0; j--){
-          drawPixel(colorErase, (MAX_COLS/2), j);
-        }
-        j = 198; 
-       } 
-       drawPixel(colorDraw, (MAX_COLS/2),j );
-       mySleep(5);
-       drawPixel(colorErase, (MAX_COLS/2), j+TAM);
-     }
-}
-void down(unsigned char colorErase, unsigned char colorDraw, int i){
-     int j = 0;
-     for( j = i; j == j;j--) {
-       if(j == 1){  
-        for(j = (TAM*2)+2;j>0; j--){
-          drawPixel(colorErase, (MAX_COLS/2), j);
-        }
-        j = 198; 
-       } 
-       drawPixel(colorDraw, (MAX_COLS/2),j );
-       mySleep(5);
-       drawPixel(colorErase, (MAX_COLS/2), j+TAM);
+void up(int x, int y){
+     int i = 0;
+     for( i = x+TAM; ;i--) {
+       if(i == 0) {
+          for(i = i+TAM;i>=0; i--){
+            drawPixel(colorErase, y, i+1);
+          }
+        i = 200;
+      }
+     drawPixel(colorDraw, y,i);
+     mySleep(10);
+     if(i <= 200-TAM) drawPixel(colorErase, y, i+TAM);
      }
 }
 /**
@@ -251,9 +205,9 @@ void down(unsigned char colorErase, unsigned char colorDraw, int i){
  * it displays rectangles in the descending order                      
  */
 void main() {
-     //printString("Now in snake mode...hit a key to start\n\r");
+     printString("Now in snake mode...hit a key to start\n\r");
+     getch();
      initEnvironment();
      initGraphics();
-     //getch();
-      up(0,0x0F,100);
+     up(100, 200);
 }
